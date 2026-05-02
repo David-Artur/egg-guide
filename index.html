@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Яйца" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <title>Как варить яйца</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0f0f1a;
+      --surface: #1a1a2e;
+      --surface2: #22223b;
+      --accent: #f5c842;
+      --accent2: #e8a020;
+      --text: #f0f0f0;
+      --text2: #a0a0b0;
+      --radius: 18px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100dvh;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 32px 0 28px;
+    }
+
+    .egg-icon {
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 4px 24px rgba(245, 200, 66, 0.3));
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      color: var(--text2);
+      font-size: 15px;
+      margin-top: 6px;
+    }
+
+    /* Steps card */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text2);
+      margin-bottom: 16px;
+    }
+
+    /* Prep steps */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface2);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-text {
+      font-size: 15px;
+      line-height: 1.5;
+      padding-top: 5px;
+      color: var(--text);
+    }
+
+    .step-text b {
+      color: var(--accent);
+    }
+
+    /* Egg types grid */
+    .egg-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .egg-type {
+      background: var(--surface2);
+      border-radius: 14px;
+      padding: 16px 12px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .egg-type::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .egg-type.soft::before  { background: #4fc3f7; }
+    .egg-type.medium::before { background: #f5c842; }
+    .egg-type.hard::before  { background: #ef6c00; }
+
+    .egg-type .time {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .egg-type.soft   .time { color: #4fc3f7; }
+    .egg-type.medium .time { color: #f5c842; }
+    .egg-type.hard   .time { color: #ef6c00; }
+
+    .egg-type .unit {
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 8px;
+    }
+
+    .egg-type .label {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .egg-type .desc {
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* Timer section */
+    .timer-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .timer-selector {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .timer-btn {
+      flex: 1;
+      padding: 12px 6px;
+      border-radius: 12px;
+      border: 2px solid var(--surface2);
+      background: transparent;
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .timer-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(245, 200, 66, 0.08);
+    }
+
+    .timer-display {
+      font-size: 64px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .timer-display.running {
+      animation: pulse 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 1; }
+      to   { opacity: 0.6; }
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 50px;
+      border: none;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .btn:active { transform: scale(0.96); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #111;
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    /* Tips */
+    .tips {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tip {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text2);
+    }
+
+    .tip-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding-top: 8px;
+      font-size: 12px;
+      color: var(--text2);
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="header">
+      <div class="egg-icon">🥚</div>
+      <h1>Как варить яйца</h1>
+      <p>Простое руководство на любой вкус</p>
+    </div>
+
+    <!-- Подготовка -->
+    <div class="card">
+      <div class="card-title">Подготовка</div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Достань яйца из холодильника за <b>10–15 мин</b> до варки — так не треснут</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Налей воду в кастрюлю — <b>на 3–4 см</b> выше яиц</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Доведи воду до <b>кипения</b> на сильном огне</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Аккуратно опусти яйца ложкой. <b>Засеки время</b> — вот тут</div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-text">Сразу после варки — в <b>холодную воду</b> на 1–2 мин. Легче чистить</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Типы -->
+    <div class="card">
+      <div class="card-title">Время варки</div>
+      <div class="egg-grid">
+        <div class="egg-type soft">
+          <div class="time">6</div>
+          <div class="unit">минут</div>
+          <div class="label">Мягкое</div>
+          <div class="desc">Жидкий желток, нежный белок</div>
+        </div>
+        <div class="egg-type medium">
+          <div class="time">8</div>
+          <div class="unit">минут</div>
+          <div class="label">Среднее</div>
+          <div class="desc">Желток кремовый, не сухой</div>
+        </div>
+        <div class="egg-type hard">
+          <div class="time">10</div>
+          <div class="unit">минут</div>
+          <div class="label">Вкрутую</div>
+          <div class="desc">Полностью твёрдый желток</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Таймер -->
+    <div class="card">
+      <div class="card-title">Таймер</div>
+      <div class="timer-wrap">
+        <div class="timer-selector">
+          <button class="timer-btn" onclick="setTimer(6, this)">Мягкое · 6</button>
+          <button class="timer-btn active" onclick="setTimer(8, this)">Среднее · 8</button>
+          <button class="timer-btn" onclick="setTimer(10, this)">Вкрутую · 10</button>
+        </div>
+        <div class="timer-display" id="timerDisplay">08:00</div>
+        <div class="timer-controls">
+          <button class="btn btn-primary" id="startBtn" onclick="toggleTimer()">Старт</button>
+          <button class="btn btn-secondary" onclick="resetTimer()">Сброс</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Советы -->
+    <div class="card">
+      <div class="card-title">Советы</div>
+      <div class="tips">
+        <div class="tip">
+          <div class="tip-icon">📌</div>
+          Время считается с момента кипения воды, а не с момента закладки яиц
+        </div>
+        <div class="tip">
+          <div class="tip-icon">🥄</div>
+          Щепотка соли в воде — если яйцо треснет, белок не вытечет
+        </div>
+        <div class="tip">
+          <div class="tip-icon">🧊</div>
+          Холодная вода после варки останавливает нагрев — желток не позеленеет
+        </div>
+        <div class="tip">
+          <div class="tip-icon">📏</div>
+          Крупное яйцо варится на 1 минуту дольше маленького
+        </div>
+        <div class="tip">
+          <div class="tip-icon">🏔️</div>
+          В горах (высокогорье) вода кипит при меньшей температуре — добавь 1–2 минуты
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Приятного аппетита 🍳</div>
+
+  </div>
+
+  <script>
+    let totalSeconds = 8 * 60;
+    let remaining = totalSeconds;
+    let interval = null;
+    let running = false;
+
+    function fmt(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+    }
+
+    function setTimer(minutes, btn) {
+      if (running) return;
+      document.querySelectorAll(".timer-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      totalSeconds = minutes * 60;
+      remaining = totalSeconds;
+      document.getElementById("timerDisplay").textContent = fmt(remaining);
+    }
+
+    function toggleTimer() {
+      if (running) {
+        clearInterval(interval);
+        running = false;
+        document.getElementById("startBtn").textContent = "Продолжить";
+        document.getElementById("timerDisplay").classList.remove("running");
+      } else {
+        if (remaining === 0) return;
+        running = true;
+        document.getElementById("startBtn").textContent = "Пауза";
+        document.getElementById("timerDisplay").classList.add("running");
+        interval = setInterval(() => {
+          remaining--;
+          document.getElementById("timerDisplay").textContent = fmt(remaining);
+          if (remaining <= 0) {
+            clearInterval(interval);
+            running = false;
+            document.getElementById("startBtn").textContent = "Старт";
+            document.getElementById("timerDisplay").classList.remove("running");
+            document.getElementById("timerDisplay").textContent = "Готово!";
+            if ("vibrate" in navigator) navigator.vibrate([300, 100, 300, 100, 300]);
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(interval);
+      running = false;
+      remaining = totalSeconds;
+      document.getElementById("startBtn").textContent = "Старт";
+      document.getElementById("timerDisplay").textContent = fmt(remaining);
+      document.getElementById("timerDisplay").classList.remove("running");
+    }
+  </script>
+</body>
+</html>
