@@ -2,7 +2,7 @@
   "name": "Как варить яйца",
   "short_name": "Яйца",
   "description": "Руководство по варке яиц с таймером",
-  "start_url": "/",
+  "start_url": "/egg-guide/",
   "display": "standalone",
   "background_color": "#0f0f1a",
   "theme_color": "#1a1a2e",
