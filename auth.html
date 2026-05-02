@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Вход — Как варить яйца</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0f0f1a;
+      --surface: #1a1a2e;
+      --surface2: #22223b;
+      --accent: #f5c842;
+      --text: #f0f0f0;
+      --text2: #a0a0b0;
+      --radius: 18px;
+      --red: #e53935;
+      --green: #43a047;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      padding-top: max(env(safe-area-inset-top), 24px);
+      padding-bottom: max(env(safe-area-inset-bottom), 24px);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .egg-icon {
+      font-size: 56px;
+      line-height: 1;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 4px 20px rgba(245, 200, 66, 0.3));
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .header p {
+      color: var(--text2);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text2);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: #111;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 14px;
+      background: var(--surface2);
+      border: 1.5px solid transparent;
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .field input:focus {
+      border-color: var(--accent);
+    }
+
+    .field input::placeholder {
+      color: #555570;
+    }
+
+    .error-msg {
+      background: rgba(229, 57, 53, 0.12);
+      border: 1px solid rgba(229, 57, 53, 0.3);
+      color: #ef9a9a;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .success-msg {
+      background: rgba(67, 160, 71, 0.12);
+      border: 1px solid rgba(67, 160, 71, 0.3);
+      color: #a5d6a7;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.5;
+      display: none;
+      margin-top: 20px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #111;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: var(--text2);
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .back-link:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="egg-icon">🥚</div>
+      <h1 id="headerTitle">Добро пожаловать</h1>
+      <p id="headerSub">Войди чтобы продолжить</p>
+    </div>
+
+    <div class="card">
+      <div class="tabs">
+        <button class="tab active" id="tabLogin" onclick="switchTab('login')">Вход</button>
+        <button class="tab" id="tabRegister" onclick="switchTab('register')">Регистрация</button>
+      </div>
+
+      <form id="authForm" onsubmit="handleSubmit(event)">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label>Пароль</label>
+          <input type="password" id="password" placeholder="••••••••" required minlength="6" autocomplete="current-password" />
+        </div>
+        <div class="error-msg" id="errorMsg"></div>
+        <button type="submit" class="btn-primary" id="submitBtn">Войти</button>
+      </form>
+
+      <div class="success-msg" id="successMsg">
+        ✅ Письмо отправлено!<br>
+        Проверь почту и нажми ссылку для подтверждения аккаунта.
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const { createClient } = window.supabase;
+    const sb = createClient(
+      'https://pyhuxpveuejhuxmkmowe.supabase.co',
+      'sb_publishable_9gu7SbKc9UUsJN-YnEw-Tg_jPT3wN8U'
+    );
+
+    let mode = 'login';
+
+    // If already logged in → go to main page
+    sb.auth.getSession().then(({ data }) => {
+      if (data.session) window.location.href = 'index.html';
+    });
+
+    // Handle email confirmation redirect
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    function switchTab(newMode) {
+      mode = newMode;
+      document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
+      document.getElementById('submitBtn').textContent = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
+      document.getElementById('headerSub').textContent = mode === 'login' ? 'Войди чтобы продолжить' : 'Создай аккаунт';
+      document.getElementById('errorMsg').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'none';
+      document.getElementById('authForm').style.display = 'flex';
+      document.getElementById('authForm').style.flexDirection = 'column';
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('submitBtn');
+      const errEl = document.getElementById('errorMsg');
+
+      btn.disabled = true;
+      btn.textContent = '...';
+      errEl.style.display = 'none';
+
+      try {
+        if (mode === 'login') {
+          const { error } = await sb.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          window.location.href = 'index.html';
+        } else {
+          const { error } = await sb.auth.signUp({
+            email, password,
+            options: {
+              emailRedirectTo: 'https://david-artur.github.io/egg-guide/'
+            }
+          });
+          if (error) throw error;
+          document.getElementById('authForm').style.display = 'none';
+          document.getElementById('successMsg').style.display = 'block';
+        }
+      } catch (err) {
+        errEl.textContent = translate(err.message);
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
+      }
+    }
+
+    function translate(msg) {
+      if (msg.includes('Invalid login credentials'))  return 'Неверный email или пароль';
+      if (msg.includes('Email not confirmed'))         return 'Подтверди email — проверь почту';
+      if (msg.includes('User already registered'))    return 'Этот email уже зарегистрирован';
+      if (msg.includes('Password should be'))         return 'Пароль должен быть не менее 6 символов';
+      if (msg.includes('Unable to validate'))         return 'Проверь правильность email';
+      return msg;
+    }
+  </script>
+</body>
+</html>

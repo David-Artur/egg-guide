@@ -287,9 +287,54 @@
       color: var(--text2);
       opacity: 0.5;
     }
+
+    /* User bar */
+    .user-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .user-email {
+      font-size: 13px;
+      color: var(--text2);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 220px;
+    }
+
+    .logout-btn {
+      background: var(--surface2);
+      border: none;
+      color: var(--text2);
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: 10px;
+    }
+
+    .logout-btn:hover { color: var(--text); }
+
+    body { visibility: hidden; }
+    body.ready { visibility: visible; }
   </style>
 </head>
 <body>
+  <div class="user-bar">
+    <span class="user-email" id="userEmail"></span>
+    <button class="logout-btn" onclick="logout()">Выйти</button>
+  </div>
+
   <div class="container">
 
     <div class="header">
@@ -398,7 +443,28 @@
 
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    const { createClient } = window.supabase;
+    const sb = createClient(
+      'https://pyhuxpveuejhuxmkmowe.supabase.co',
+      'sb_publishable_9gu7SbKc9UUsJN-YnEw-Tg_jPT3wN8U'
+    );
+
+    sb.auth.getSession().then(({ data }) => {
+      if (!data.session) {
+        window.location.href = 'auth.html';
+      } else {
+        document.getElementById('userEmail').textContent = data.session.user.email;
+        document.body.classList.add('ready');
+      }
+    });
+
+    async function logout() {
+      await sb.auth.signOut();
+      window.location.href = 'auth.html';
+    }
+
     let totalSeconds = 8 * 60;
     let remaining = totalSeconds;
     let interval = null;
